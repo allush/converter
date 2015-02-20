@@ -12,7 +12,6 @@ class Converter
     private $_skippedWordsInType;
     private $_skippedWordsInName;
 
-    // @fixme подмать, как их убрать из переменных объекта
     private $_unrecognizedRows = array();
     private $_validRowCount = 0;
     private $_rowCount = 0;
@@ -27,10 +26,10 @@ class Converter
     );
 
     /**
-     * @param $file array
+     * @param $inputFile array
      * @throws Exception
      */
-    public function __construct($file)
+    public function __construct($inputFile)
     {
         $this->_log = 'log-' . date('d-m-Y_H-m-s', time()) . '.txt';
 
@@ -66,22 +65,22 @@ class Converter
         }
         $this->_skippedWordsInName = (array)$this->_skippedWordsInName;
 
-        if ($file['type'] != 'text/csv') {
+        if ($inputFile['type'] != 'text/csv') {
             throw new Exception('Invalid file format: only supported format csv.');
         }
 
-        $file = fopen($file['tmp_name'], 'r+');
+        $file = fopen($inputFile['tmp_name'], 'r+');
         if (!$file) {
             throw new Exception('Could not open the uploaded file.');
         }
 
-        $d = fread($file, filesize($file['tmp_name']));
+        $d = fread($file, filesize($inputFile['tmp_name']));
         if (strpos($d, "\r") !== false) {
             $d = str_replace("\r", "\n", $d);
             fseek($file, 0);
             fwrite($file, $d);
             fclose($file);
-            $file = fopen($file['tmp_name'], 'r');
+            $file = fopen($inputFile['tmp_name'], 'r');
             if (!$file) {
                 throw new Exception('Could not open the converted file.');
             }
@@ -568,10 +567,18 @@ class Converter
     {
         $type = null;
 
-        foreach ($this->_availableTypes as $availableType) {
-            $availableType = (string)$availableType;
-            if (stripos($name, $availableType) !== false) {
-                $type = $availableType;
+        foreach ($this->_availableTypes as $reference => $applicants) {
+            if (stripos($name, $reference) !== false) {
+                $type = $reference;
+                break;
+            }
+            foreach ($applicants as $applicant) {
+                if (stripos($name, $applicant) !== false) {
+                    $type = $reference;
+                    break;
+                }
+            }
+            if ($type) {
                 break;
             }
         }
