@@ -31,7 +31,7 @@ class Converter
      */
     public function __construct($inputFile)
     {
-        $this->_log = 'log-' . date('d-m-Y_H-m-s', time()) . '.txt';
+        $this->_log = 'logs/log-' . date('d-m-Y_H-m-s', time()) . '.txt';
 
         $this->_comment = isset($_POST['name']) ? htmlspecialchars($_POST['name']) : null;
 
@@ -95,8 +95,6 @@ class Converter
 
     public function pdf()
     {
-        require 'mpdf/mpdf.php';
-
         $mpdf = new mPDF('', 'A4', '', '', 8, 8, 12, 8, 0, 0);
 
         $css = file_get_contents('css/pdf.css');
