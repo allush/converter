@@ -145,6 +145,23 @@ class Converter
         }
 
         $mpdf->Output($this->_filename . '.pdf', 'F');
+
+        if (file_exists($this->_filename) and is_file($this->_filename)) {
+            unlink($this->_filename);
+        }
+
+        $dir = 'tmp';
+        $files = scandir($dir);
+        $count = count($files);
+        if ($count > 7) {
+            for ($i = 0; $i < $count - 5; $i++) {
+                $path = $dir . DIRECTORY_SEPARATOR . $files[$i];
+                if (!is_file($path) or !file_exists($path))
+                    continue;
+
+                unlink($path);
+            }
+        }
     }
 
     private function _dataByName()
