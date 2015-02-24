@@ -22,7 +22,7 @@ try {
 
     $comment = isset($_POST['name']) ? htmlspecialchars($_POST['name']) : null;
 
-    shell_exec('php convert-csv-to-pdf.php ' . $filename . ' ' . $comment . ' > /dev/null 2>/dev/null &');
+    shell_exec('php convert-csv-to-pdf.php "' . $filename . '" "' . $comment . '" > /dev/null 2>/dev/null &');
 
     header('Location: index.php?filename=' . $filename);
 } catch (Exception $e) {
