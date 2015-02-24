@@ -19,6 +19,7 @@ class Converter
     private $_sizes = array();
     private $_totalByGroups = array();
     private $_comment = null;
+    private $_filename = null;
 
     private $_groups = array(
         'PRESS' => 5, # >=5
@@ -26,14 +27,15 @@ class Converter
     );
 
     /**
-     * @param $inputFile array
+     * @param $filename string
+     * @param $comment string
      * @throws Exception
      */
-    public function __construct($inputFile)
+    public function __construct($filename, $comment = null)
     {
+        $this->_filename = $filename;
+        $this->_comment = $comment;
         $this->_log = 'logs/log-' . date('d-m-Y_H-m-s', time()) . '.txt';
-
-        $this->_comment = isset($_POST['name']) ? htmlspecialchars($_POST['name']) : null;
 
         $this->_availableSizes = json_decode(file_get_contents('config/sizes.json'));
         if ($this->_availableSizes === null) {
@@ -65,22 +67,18 @@ class Converter
         }
         $this->_skippedWordsInName = (array)$this->_skippedWordsInName;
 
-        if ($inputFile['type'] != 'text/csv') {
-            throw new Exception('Invalid file format: only supported format csv.');
-        }
-
-        $file = fopen($inputFile['tmp_name'], 'r+');
+        $file = fopen($this->_filename, 'r+');
         if (!$file) {
             throw new Exception('Could not open the uploaded file.');
         }
 
-        $d = fread($file, filesize($inputFile['tmp_name']));
+        $d = fread($file, filesize($this->_filename));
         if (strpos($d, "\r") !== false) {
             $d = str_replace("\r", "\n", $d);
             fseek($file, 0);
             fwrite($file, $d);
             fclose($file);
-            $file = fopen($inputFile['tmp_name'], 'r');
+            $file = fopen($this->_filename, 'r');
             if (!$file) {
                 throw new Exception('Could not open the converted file.');
             }
@@ -146,8 +144,7 @@ class Converter
             $mpdf->WriteHTML($this->_unrecognizedRowsHtml(), 2);
         }
 
-        $filename = $_FILES['csv']['name'] . '.pdf';
-        $mpdf->Output($filename, 'D');
+        $mpdf->Output($this->_filename . '.pdf', 'F');
     }
 
     private function _dataByName()

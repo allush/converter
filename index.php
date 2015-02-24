@@ -3,7 +3,7 @@ session_start();
 $error = isset($_SESSION['error']) ? $_SESSION['error'] : null;
 unset($_SESSION['error']);
 ?>
-
+<!DOCTYPE html>
 <html>
 <head>
     <title>CSV2PDF</title>
@@ -11,6 +11,9 @@ unset($_SESSION['error']);
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="js/jquery-2.1.3.min.js"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -18,6 +21,27 @@ unset($_SESSION['error']);
 
     <div class="row">
         <div class="col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-10 col-xs-offset-1">
+            <?php
+            $pdf = isset($_GET['filename']) ? $_GET['filename'] . '.pdf' : null;
+            if ($pdf) { ?>
+                <div class="panel panel-default">
+                    <div class="panel-body text-center">
+                        <?php if (file_exists($pdf)) { ?>
+                            <a class="btn btn-primary" href="<?= $pdf; ?>">Download file</a>
+                        <?php } else { ?>
+                        <img src="img/ajax-loader.gif">
+                            <script type="text/javascript">
+                                $(function () {
+                                    setTimeout(function () {
+                                        location.reload()
+                                    }, 5000);
+                                });
+                            </script>
+                        <?php } ?>
+                    </div>
+                </div>
+            <?php } ?>
+
             <?php if ($error) { ?>
                 <div class="alert alert-danger alert-dismissible" role="alert">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
@@ -49,9 +73,6 @@ unset($_SESSION['error']);
         </div>
     </div>
 </div>
-
-<script src="js/jquery-2.1.3.min.js"></script>
-<script src="bootstrap/js/bootstrap.min.js"></script>
 </body>
 </html>
 
