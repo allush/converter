@@ -27,7 +27,7 @@ unset($_SESSION['error']);
                 <div class="panel panel-default">
                     <div class="panel-body text-center">
                         <?php if (file_exists($pdf)) { ?>
-                            <a class="btn btn-primary" href="<?= $pdf; ?>">Download file</a>
+                            <a class="btn btn-primary" href="<?= $pdf; ?>">Download PDF file</a>
                         <?php } else { ?>
                         <img src="img/ajax-loader.gif">
                             <script type="text/javascript">
