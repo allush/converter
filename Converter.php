@@ -451,20 +451,20 @@ class Converter
 
             if ($type === null) {
                 $type = $this->_tryGetTypeInName($name);
-
-                if ($type === null) {
-                    $type = 'T-Shirt';
-                }
             }
 
-            if ($color === null) {
+            if (count($complexColumn) == 3) {
                 // если в колонке №2 есть три элемента, разделенных двумя слешами соответственно, то третий параметр %color -- это скорее всего цвет.
                 // Мы сверяем %color с таблицей цветов и если находим соответствие, считаем, что это цвет. Если в таблице цветов нет такого цвета, пишем ошибку в конце скрипта
                 // -- #linenumber, undefined color "%color" ---
-                if (count($complexColumn) == 3) {
+                if ($color === null) {
                     $this->_unrecognizedRows[] = '-- ' . $this->_rowCount . ' undefined color ' . $complexColumn[2] . ' --';
+                    continue;
                 }
-                $color = 'Black';
+                if ($type === null) {
+                    $this->_unrecognizedRows[] = '-- ' . $this->_rowCount . ' undefined type ' . $complexColumn[1] . ' --';
+                    continue;
+                }
             }
 
             if (!$name or !$type or !$color or !$size) {
